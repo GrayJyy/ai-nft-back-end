@@ -1,0 +1,3 @@
+const GAS = 8000000000
+const GAS_PRICE = 210000
+export { GAS, GAS_PRICE }
