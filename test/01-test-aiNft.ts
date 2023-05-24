@@ -7,10 +7,12 @@ import { COST } from '../constants/constant'
 describe('AiNft', () => {
   let aiNft: AiNft
   let account: SignerWithAddress
+  let account2: SignerWithAddress
   beforeEach(async () => {
-    const { deployer } = await getNamedAccounts()
-    account = await ethers.getSigner(deployer)
     await deployments.fixture(['ainft'])
+    const { deployer, player } = await getNamedAccounts()
+    account = await ethers.getSigner(deployer)
+    account2 = await ethers.getSigner(player)
     const aiNftDeployment = await deployments.get('AiNft')
     aiNft = await ethers.getContractAt('AiNft', aiNftDeployment.address, account)
   })
@@ -28,6 +30,18 @@ describe('AiNft', () => {
   describe('withdraw', () => {
     it('Should reverts if nobody minted', async () => {
       await expect(aiNft.withdraw()).to.be.revertedWithCustomError(aiNft, 'AiNft__BalanceIsZero')
+    })
+    it('Should update the balance', async () => {
+      const { deployer } = await getNamedAccounts()
+      const balanceBefore = await ethers.provider.getBalance(deployer)
+      aiNft = aiNft.connect(account2)
+      await aiNft.mintNft('', { value: COST })
+      aiNft = aiNft.connect(account)
+      await aiNft.withdraw()
+      const balanceAfter = await ethers.provider.getBalance(deployer)
+      expect(balanceAfter).to.be.greaterThan(balanceBefore)
+      const contractBalance = await ethers.provider.getBalance(aiNft.address)
+      assert.equal(contractBalance.toString(), '0')
     })
   })
 })
