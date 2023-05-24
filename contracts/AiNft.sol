@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 //errors
 error AiNft__PaymentIsNotEnough();
 error AiNft__PaymentFailed();
+error AiNft__BalanceIsZero();
 
 contract AiNft is ERC721URIStorage {
     using Counters for Counters.Counter;
@@ -26,7 +27,7 @@ contract AiNft is ERC721URIStorage {
         s_cost = _cost;
     }
 
-    // mlodify
+    // modifiers
     modifier isEnough() {
         if (msg.value < s_cost) {
             revert AiNft__PaymentIsNotEnough();
@@ -34,11 +35,15 @@ contract AiNft is ERC721URIStorage {
         _;
     }
 
+    // events
+    event Minted(uint256 indexed tokenId, address to);
+
     //function
     function mintNft(string memory tokenUri) public payable isEnough {
         uint256 _tokenId = s_tokenIds.current();
         _safeMint(msg.sender, _tokenId);
         _setTokenURI(_tokenId, tokenUri);
+        emit Minted(_tokenId, msg.sender);
         s_tokenIds.increment();
     }
 
@@ -46,12 +51,23 @@ contract AiNft is ERC721URIStorage {
         return s_tokenIds.current();
     }
 
-    function withdraw() public payable isEnough {
+    function withdraw() public payable {
+        if (s_tokenIds.current() == 0) {
+            revert AiNft__BalanceIsZero();
+        }
         (bool success, ) = s_owner.call{value: payable(address(this)).balance}(
             ""
         );
         if (!success) {
             revert AiNft__PaymentFailed();
         }
+    }
+
+    function getCost() public view returns (uint256) {
+        return s_cost;
+    }
+
+    function getOwner() public view returns (address) {
+        return s_owner;
     }
 }
