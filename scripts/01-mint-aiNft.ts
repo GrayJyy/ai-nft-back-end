@@ -1,6 +1,7 @@
 import { deployments, ethers, getNamedAccounts } from 'hardhat'
 import 'hardhat-deploy'
-import { COST } from '../constants/constant'
+
+const COST = ethers.utils.parseEther('0.01')
 
 async function mintAiNft() {
   const { deployer } = await getNamedAccounts()

@@ -1,8 +1,10 @@
 import { DeployFunction } from 'hardhat-deploy/dist/types'
 import { developChain } from '../helperHardhatConfig'
-import { COST, WAIT_CONFIRMATIONS } from '../constants/constant'
+import { WAIT_CONFIRMATIONS } from '../constants/constant'
 import verify from '../utils/verify'
+import { ethers } from 'hardhat'
 
+const COST = ethers.utils.parseEther('0.01')
 const deployAiNft: DeployFunction = async ({ deployments, network, getNamedAccounts }) => {
   const { deploy, log } = deployments
   const { deployer } = await getNamedAccounts()

@@ -2,7 +2,8 @@ import { deployments, ethers, getNamedAccounts } from 'hardhat'
 import { AiNft } from '../typechain-types'
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { assert, expect } from 'chai'
-import { COST } from '../constants/constant'
+
+const COST = ethers.utils.parseEther('0.01')
 
 describe('AiNft', () => {
   let aiNft: AiNft
