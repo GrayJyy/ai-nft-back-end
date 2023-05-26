@@ -1,5 +1,5 @@
 import { deployments, ethers, getNamedAccounts } from 'hardhat'
-import { AiNft } from '../typechain-types'
+import { AiNft } from '../../typechain-types'
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { assert, expect } from 'chai'
 
@@ -11,9 +11,9 @@ describe('AiNft', () => {
   let account2: SignerWithAddress
   beforeEach(async () => {
     await deployments.fixture(['ainft'])
-    const { deployer, player } = await getNamedAccounts()
+    const { deployer, user } = await getNamedAccounts()
     account = await ethers.getSigner(deployer)
-    account2 = await ethers.getSigner(player)
+    account2 = await ethers.getSigner(user)
     const aiNftDeployment = await deployments.get('AiNft')
     aiNft = await ethers.getContractAt('AiNft', aiNftDeployment.address, account)
   })
